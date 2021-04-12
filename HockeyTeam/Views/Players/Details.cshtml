@@ -1,0 +1,60 @@
+﻿@model HockeyTeam.Models.Player
+@{
+    ViewBag.Title = "Player Details";
+}
+<h2>@ViewBag.Title</h2>
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Position.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Position.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Score)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Score)
+        </dd>
+        @if (Model.PlayerImageMappings != null && Model.PlayerImageMappings.Any())
+        {
+            <dt></dt>
+            <dd>
+                <img src="@(Url.Content(Constants.PlayerImagePath) +
+                        Model.PlayerImageMappings.OrderBy(pim =>
+                            pim.ImageNumber).ElementAt(0).PlayerImage.FileName)"
+                     style=padding:5px>
+            </dd>
+            <dt></dt>
+            <dd>
+                @foreach (var item in Model.PlayerImageMappings.OrderBy(pim =>
+                    pim.ImageNumber))
+                {
+                    <a href="@(Url.Content(Constants.PlayerImagePath) +
+                           item.PlayerImage.FileName)">
+                        <img src="@(Url.Content(Constants.PlayerThumbnailPath) +
+                                                                   item.PlayerImage.FileName)" style=padding:5px>
+                    </a>
+                }
+            </dd>
+        }
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

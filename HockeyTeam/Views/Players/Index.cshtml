@@ -1,0 +1,88 @@
+﻿@model HockeyTeam.ViewModels.PlayerIndexViewModel
+@using PagedList.Mvc
+
+@{
+    ViewBag.Title = "Players";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+    @(String.IsNullOrWhiteSpace(Model.Search) ? "Showing all" : "You search for " + Model.Search + " found") @Model.Players.TotalItemCount products
+</p>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+    @using (Html.BeginRouteForm("PlayersIndex", FormMethod.Get))
+    {
+        <label>Filter by category:</label>
+        @Html.DropDownListFor(vm => vm.Position, Model.CatFilterItems, "All");
+        <label>Sort by:</label>
+        @Html.DropDownListFor(vm => vm.SortBy, new SelectList(Model.Sorts, "Value", "Key"), "Default")
+        <input type="submit" value="Filter" />
+        <input type="hidden" name="Search" id="Search" value="@Model.Search" />
+    }
+</p>
+<table class="table">
+    <tr>
+        <th></th>
+        <th>
+            @Html.DisplayNameFor(model => model.Position)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Players.First().Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Players.First().Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Players.First().Score)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.Players)
+    {
+        <tr>
+            <td>
+                @if (item.PlayerImageMappings != null && item.PlayerImageMappings.Any())
+                {
+                    <a href="@Url.Action("Details", new { id = item.ID})">
+                        <img src="@(Url.Content(Constants.PlayerImagePath) +
+                        item.PlayerImageMappings.OrderBy(pim =>
+                            pim.ImageNumber).ElementAt(0).PlayerImage.FileName)">
+                    </a>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Position.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Score)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+            </td>
+        </tr>
+    }
+
+</table>
+
+<div>
+    Page @(Model.Players.PageCount < Model.Players.PageNumber ? 0 : Model.Players.PageNumber) of @Model.Players.PageCount
+    @Html.PagedListPager(Model.Players, page => Url.Action("Index", new
+            {
+                category = @Model.Position,
+                 Search = @Model.Search,
+                 sortBy = @Model.SortBy,
+            page
+        }))
+</div>
